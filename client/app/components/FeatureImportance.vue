@@ -19,9 +19,9 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="p-4 bg-white shadow rounded-2xl">
-    <h2 class="text-lg font-semibold mb-2 text-gray-700">
-      Importancia de variables (RandomForest)
+  <div class="p-4 bg-white shadow rounded-2xl w-full" style="height: 400px;">
+    <h2 class="text-lg font-semibold mb-3 text-gray-700">
+      Importancia de variables (Random Forest)
     </h2>
     <Bar
       :data="{
@@ -36,12 +36,15 @@ const props = defineProps({
       }"
       :options="{
         responsive: true,
+        maintainAspectRatio: false,
         indexAxis: 'y',
         scales: {
-          x: { title: { display: true, text: 'Relevancia' } },
-          y: { title: { display: true, text: 'Variable' } }
+          x: { type: 'linear', beginAtZero: true },
+          y: { type: 'category' }
         }
       }"
     />
   </div>
 </template>
+
+

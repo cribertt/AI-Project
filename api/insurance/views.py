@@ -4,6 +4,7 @@ import joblib
 import numpy as np
 import os
 import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 model = joblib.load(os.path.join(BASE_DIR, 'insurance_model.pkl'))
@@ -41,20 +42,21 @@ def predict_insurance(request):
 
 @api_view(['GET'])
 def get_insurance_data(request):
-    """
-    Endpoint para devolver parte del dataset de seguros médicos.
-    """
-    try:
-        # Carga el dataset desde tu URL (puede ser local o HTTP)
-        url = 'https://dev.hydrassa.com/inacap/csv/insurance.csv'
-        df = pd.read_csv(url)
+    df = pd.read_csv('https://dev.hydrassa.com/inacap/csv/insurance.csv')
+    df['sex'] = df['sex'].map({'male': 1, 'female': 0})
+    df['smoker'] = df['smoker'].map({'yes': 1, 'no': 0})
+    df = pd.get_dummies(df, columns=['region'], drop_first=True)
 
-        # Opcional: selecciona solo algunas columnas para no sobrecargar
-        df_sample = df[['age', 'bmi', 'children', 'smoker', 'charges']].sample(50)
+    X = df.drop('charges', axis=1)
+    y = df['charges']
 
-        # Convierte a formato JSON
-        data = df_sample.to_dict(orient='records')
+    rf = RandomForestRegressor()
+    rf.fit(X, y)
 
-        return Response(data)
-    except Exception as e:
-        return Response({'error': str(e)}, status=400)
+    importances = rf.feature_importances_
+    features = X.columns.tolist()
+
+    return Response({
+        "features": features,
+        "importance": importances.tolist()
+    })

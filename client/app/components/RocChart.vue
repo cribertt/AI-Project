@@ -11,39 +11,44 @@ import {
   PointElement
 } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
+// 🔥 Registro obligatorio de escalas y elementos
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement
+)
 
 const props = defineProps({
-  fpr: Array,
-  tpr: Array,
+  fpr: Array, // false positive rate
+  tpr: Array, // true positive rate
   auc: Number
 })
 </script>
 
 <template>
-  <div class="p-4 bg-white shadow rounded-2xl">
-    <h2 class="text-lg font-semibold mb-2 text-gray-700">
-      Curva ROC (AUC: {{ auc.toFixed(3) }})
-    </h2>
+  <div class="bg-white shadow rounded-2xl p-6" style="height: 400px;">
     <Line
       :data="{
         labels: fpr,
-        datasets: [
-          {
-            label: 'ROC Curve',
-            data: tpr,
-            borderColor: '#16a34a',
-            fill: false,
-            tension: 0.3,
-          },
-        ],
+        datasets: [{
+          label: 'ROC Curve',
+          data: tpr,
+          borderColor: '#16a34a',
+          tension: 0.3,
+          fill: false
+        }]
       }"
       :options="{
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
-          x: { title: { display: true, text: 'False Positive Rate' } },
-          y: { title: { display: true, text: 'True Positive Rate' } },
-        },
+          x: { type: 'linear', min: 0, max: 1 },
+          y: { type: 'linear', min: 0, max: 1 }
+        }
       }"
     />
   </div>
