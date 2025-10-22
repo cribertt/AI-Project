@@ -15,6 +15,7 @@ def predict_insurance(request):
     try:
         data = request.data
 
+        # 1. Obtener valores de entrada
         age = float(data.get('age', 0))
         sex = 1 if data.get('sex', 'male') == 'male' else 0
         bmi = float(data.get('bmi', 0))
@@ -22,15 +23,16 @@ def predict_insurance(request):
         smoker = 1 if data.get('smoker', 'no') == 'yes' else 0
         region = data.get('region', 'northeast').lower()
 
-        # Crear variables dummy igual que en el entrenamiento
+        # 2. Crear variables dummy igual que en el entrenamiento
         region_northwest = 1 if region == 'northwest' else 0
         region_southeast = 1 if region == 'southeast' else 0
         region_southwest = 1 if region == 'southwest' else 0
 
-        # El orden debe coincidir con el del entrenamiento
+        # 3. Orden idéntico al entrenamiento
         X = np.array([[age, sex, bmi, children, smoker,
                        region_northwest, region_southeast, region_southwest]])
 
+        # 4. Escalar y predecir
         X_scaled = scaler.transform(X)
         prediction = model.predict(X_scaled)[0]
 
