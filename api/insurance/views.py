@@ -40,25 +40,3 @@ def predict_insurance(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=400)
-
-
-@api_view(['GET'])
-def get_insurance_data(request):
-    df = pd.read_csv('https://dev.hydrassa.com/inacap/csv/insurance.csv')
-    df['sex'] = df['sex'].map({'male': 1, 'female': 0})
-    df['smoker'] = df['smoker'].map({'yes': 1, 'no': 0})
-    df = pd.get_dummies(df, columns=['region'], drop_first=True)
-
-    X = df.drop('charges', axis=1)
-    y = df['charges']
-
-    rf = RandomForestRegressor()
-    rf.fit(X, y)
-
-    importances = rf.feature_importances_
-    features = X.columns.tolist()
-
-    return Response({
-        "features": features,
-        "importance": importances.tolist()
-    })
